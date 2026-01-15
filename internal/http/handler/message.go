@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"strconv"
 	"time"
 
 	"chat-service/internal/http/dto/request"
@@ -12,24 +11,22 @@ import (
 )
 
 func (h *Handler) CreateMessage(w http.ResponseWriter, r *http.Request) {
-	var req request.CreateMessage
+	chatID := helpers.ParseParamID(w, r, "chatID")
+	req := request.CreateMessage{}
 	if err := helpers.DecodeJSON(r, &req); err != nil {
 		helpers.HandleError(w, err)
 		return
 	}
-
-	chatIdParam := r.PathValue("chatID")
-	chatID, err := strconv.ParseUint(chatIdParam, 10, 64)
-	if err != nil || chatID == 0 {
-		helpers.HandleError(w, consts.InvalidChatID)
+	if req.Text == "" {
+		helpers.HandleError(w, consts.InvalidChatText)
 		return
 	}
 
 	ctx := helpers.WithTimeout(r.Context(), 500*time.Second)
 	defer helpers.Cancel()
 
-	msg := mappers.CreateMessageToModel(req, uint(chatID))
-	if err = h.svc.CreateMessage(ctx, &msg); err != nil {
+	msg := mappers.CreateMessageToModel(req, chatID)
+	if err := h.svc.CreateMessage(ctx, &msg); err != nil {
 		helpers.HandleError(w, err)
 		return
 	}

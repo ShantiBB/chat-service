@@ -21,6 +21,15 @@ func HandleError(w http.ResponseWriter, err error) {
 	case errors.Is(err, consts.InvalidChatID):
 		sendError(w, http.StatusBadRequest, consts.MsgInvalidChatID)
 
+	case errors.Is(err, consts.InvalidChatTitle):
+		sendError(w, http.StatusBadRequest, consts.MsgInvalidChatTitle)
+
+	case errors.Is(err, consts.InvalidMessagesLimit):
+		sendError(w, http.StatusBadRequest, consts.MsgInvalidMessagesLimit)
+
+	case errors.Is(err, consts.InvalidChatText):
+		sendError(w, http.StatusBadRequest, consts.MsgInvalidChatText)
+
 	case errors.Is(err, consts.ChatNotFound):
 		sendError(w, http.StatusNotFound, consts.MsgChatNotFound)
 

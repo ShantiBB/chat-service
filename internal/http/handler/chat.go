@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"net/http"
-	"strconv"
 	"time"
 
 	"chat-service/internal/http/dto/request"
@@ -18,6 +17,10 @@ func (h *Handler) CreateChat(w http.ResponseWriter, r *http.Request) {
 		helpers.HandleError(w, err)
 		return
 	}
+	if req.Title == "" {
+		helpers.HandleError(w, consts.InvalidChatTitle)
+		return
+	}
 
 	ctx := helpers.WithTimeout(r.Context(), 500*time.Second)
 	defer helpers.Cancel()
@@ -28,32 +31,22 @@ func (h *Handler) CreateChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	chatResp := mappers.ChatToResponse(chat)
+	chatResp := mappers.CreateChatToResponse(chat)
 	helpers.SendJSON(w, http.StatusCreated, chatResp)
 }
 
 func (h *Handler) GetChatByID(w http.ResponseWriter, r *http.Request) {
-	idParam := r.PathValue("id")
-	id, err := strconv.ParseUint(idParam, 10, 64)
-	if err != nil || id == 0 {
-		helpers.HandleError(w, consts.InvalidChatID)
-		return
-	}
+	id := helpers.ParseParamID(w, r, "id")
 
-	limitParam := r.URL.Query().Get("limit")
-	limit := 20
-	if limitParam != "" {
-		limit, err = strconv.Atoi(limitParam)
-		if err != nil || limit < 0 {
-			helpers.HandleError(w, consts.InvalidLimit)
-			return
-		}
+	limit := helpers.QueryLimit(w, r)
+	if limit == -1 {
+		return
 	}
 
 	ctx, cancel := context.WithTimeout(r.Context(), 500*time.Second)
 	defer cancel()
 
-	chat, err := h.svc.GetChatByID(ctx, uint(id), limit)
+	chat, err := h.svc.GetChatByID(ctx, id, limit)
 	if err != nil {
 		helpers.HandleError(w, err)
 		return
@@ -64,17 +57,12 @@ func (h *Handler) GetChatByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) DeleteChatByID(w http.ResponseWriter, r *http.Request) {
-	idParam := r.PathValue("id")
-	id, err := strconv.ParseUint(idParam, 10, 64)
-	if err != nil || id == 0 {
-		helpers.HandleError(w, consts.InvalidChatID)
-		return
-	}
+	id := helpers.ParseParamID(w, r, "id")
 
 	ctx, cancel := context.WithTimeout(r.Context(), 500*time.Second)
 	defer cancel()
 
-	if err = h.svc.DeleteChatByID(ctx, uint(id)); err != nil {
+	if err := h.svc.DeleteChatByID(ctx, id); err != nil {
 		helpers.HandleError(w, err)
 		return
 	}
