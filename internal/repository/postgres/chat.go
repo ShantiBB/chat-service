@@ -6,20 +6,21 @@ import (
 
 	"gorm.io/gorm"
 
-	"chat-service/internal/repository/consts"
 	"chat-service/internal/repository/models"
+	"chat-service/internal/utils/consts"
 )
 
 func (r *Repository) InsertChat(ctx context.Context, chat *models.Chat) error {
-	return gorm.G[models.Chat](r.db).Create(ctx, chat)
+	return r.db.WithContext(ctx).Create(chat).Error
 }
 
 func (r *Repository) SelectChat(ctx context.Context, id uint) (models.Chat, error) {
-	chat, err := gorm.G[models.Chat](r.db).Where("id = ?", id).First(ctx)
-	if err != nil {
+	var chat models.Chat
+	if err := r.db.WithContext(ctx).Where("id = ?", id).First(&chat).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.Chat{}, consts.ChatNotFound
 		}
+
 		return models.Chat{}, err
 	}
 
@@ -27,13 +28,14 @@ func (r *Repository) SelectChat(ctx context.Context, id uint) (models.Chat, erro
 }
 
 func (r *Repository) DeleteChat(ctx context.Context, id uint) error {
-	rowsAffected, err := gorm.G[models.Chat](r.db).Where("id = ?", id).Delete(ctx)
+	res := r.db.WithContext(ctx).Where("id = ?", id).Delete(&models.Chat{})
 
-	if err != nil {
-		return err
+	if res.Error != nil {
+		return res.Error
 	}
-	if rowsAffected == 0 {
-		return consts.FailedDeleteChat
+
+	if res.RowsAffected == 0 {
+		return consts.ChatNotFound
 	}
 
 	return nil

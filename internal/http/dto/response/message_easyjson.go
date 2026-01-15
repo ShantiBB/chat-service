@@ -17,7 +17,7 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjson9b8f5552DecodeChatServiceInternalHttpDtoResponse(in *jlexer.Lexer, out *Chat) {
+func easyjson4086215fDecodeChatServiceInternalHttpDtoResponse(in *jlexer.Lexer, out *Message) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -37,38 +37,11 @@ func easyjson9b8f5552DecodeChatServiceInternalHttpDtoResponse(in *jlexer.Lexer, 
 			} else {
 				out.ID = uint(in.Uint())
 			}
-		case "title":
+		case "text":
 			if in.IsNull() {
 				in.Skip()
 			} else {
-				out.Title = string(in.String())
-			}
-		case "messages":
-			if in.IsNull() {
-				in.Skip()
-				out.Messages = nil
-			} else {
-				in.Delim('[')
-				if out.Messages == nil {
-					if !in.IsDelim(']') {
-						out.Messages = make([]Message, 0, 1)
-					} else {
-						out.Messages = []Message{}
-					}
-				} else {
-					out.Messages = (out.Messages)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v1 Message
-					if in.IsNull() {
-						in.Skip()
-					} else {
-						(v1).UnmarshalEasyJSON(in)
-					}
-					out.Messages = append(out.Messages, v1)
-					in.WantComma()
-				}
-				in.Delim(']')
+				out.Text = string(in.String())
 			}
 		case "created_at":
 			if in.IsNull() {
@@ -88,7 +61,7 @@ func easyjson9b8f5552DecodeChatServiceInternalHttpDtoResponse(in *jlexer.Lexer, 
 		in.Consumed()
 	}
 }
-func easyjson9b8f5552EncodeChatServiceInternalHttpDtoResponse(out *jwriter.Writer, in Chat) {
+func easyjson4086215fEncodeChatServiceInternalHttpDtoResponse(out *jwriter.Writer, in Message) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -98,25 +71,9 @@ func easyjson9b8f5552EncodeChatServiceInternalHttpDtoResponse(out *jwriter.Write
 		out.Uint(uint(in.ID))
 	}
 	{
-		const prefix string = ",\"title\":"
+		const prefix string = ",\"text\":"
 		out.RawString(prefix)
-		out.String(string(in.Title))
-	}
-	{
-		const prefix string = ",\"messages\":"
-		out.RawString(prefix)
-		if in.Messages == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v2, v3 := range in.Messages {
-				if v2 > 0 {
-					out.RawByte(',')
-				}
-				(v3).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
+		out.String(string(in.Text))
 	}
 	{
 		const prefix string = ",\"created_at\":"
@@ -127,25 +84,25 @@ func easyjson9b8f5552EncodeChatServiceInternalHttpDtoResponse(out *jwriter.Write
 }
 
 // MarshalJSON supports json.Marshaler interface
-func (v Chat) MarshalJSON() ([]byte, error) {
+func (v Message) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson9b8f5552EncodeChatServiceInternalHttpDtoResponse(&w, v)
+	easyjson4086215fEncodeChatServiceInternalHttpDtoResponse(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v Chat) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson9b8f5552EncodeChatServiceInternalHttpDtoResponse(w, v)
+func (v Message) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjson4086215fEncodeChatServiceInternalHttpDtoResponse(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
-func (v *Chat) UnmarshalJSON(data []byte) error {
+func (v *Message) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson9b8f5552DecodeChatServiceInternalHttpDtoResponse(&r, v)
+	easyjson4086215fDecodeChatServiceInternalHttpDtoResponse(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *Chat) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson9b8f5552DecodeChatServiceInternalHttpDtoResponse(l, v)
+func (v *Message) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjson4086215fDecodeChatServiceInternalHttpDtoResponse(l, v)
 }

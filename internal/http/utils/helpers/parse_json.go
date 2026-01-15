@@ -1,11 +1,12 @@
 package helpers
 
 import (
-	"errors"
 	"io"
 	"net/http"
 
 	"github.com/mailru/easyjson"
+
+	"chat-service/internal/utils/consts"
 )
 
 func SendJSON(w http.ResponseWriter, code int, v easyjson.Marshaler) {
@@ -21,13 +22,13 @@ func SendJSON(w http.ResponseWriter, code int, v easyjson.Marshaler) {
 
 func DecodeJSON(r *http.Request, v easyjson.Unmarshaler) error {
 	if r.Body == nil {
-		return errors.New("empty body")
+		return consts.JsonEmptyBody
 	}
 	defer r.Body.Close()
 
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		return err
+		return consts.JsonInvalid
 	}
 
 	return easyjson.Unmarshal(b, v)

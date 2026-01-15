@@ -9,6 +9,7 @@ func ChatToResponse(chat models.Chat) response.Chat {
 	return response.Chat{
 		ID:        chat.ID,
 		Title:     chat.Title,
+		Messages:  MessagesToResponse(chat.Messages),
 		CreatedAt: chat.CreatedAt,
 	}
 }
