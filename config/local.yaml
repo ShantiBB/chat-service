@@ -1,0 +1,16 @@
+server:
+  host: "localhost"
+  port: 8080
+postgres:
+  host: "localhost"
+  port: 5432
+  user: "postgres"
+  password: "1221"
+  db: "chat"
+  sslmode: "disable"
+  time_zone: "Europe/Moscow"
+  pool:
+    max_open_conns: 25
+    max_idle_conns: 10
+    conn_max_lifetime: 1h
+    conn_max_idle_time: 15m
