@@ -15,7 +15,7 @@ type Repository struct {
 	db *gorm.DB
 }
 
-func (r *Repository) New(cfg config.Config) *Repository {
+func New(cfg *config.Config) *Repository {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s",
 		cfg.Postgres.Host,
