@@ -2,13 +2,14 @@ package handler
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 	"time"
 
 	"chat-service/internal/http/dto/request"
 	"chat-service/internal/http/utils/helpers"
 	"chat-service/internal/http/utils/mappers"
-	"chat-service/internal/utils/consts"
+	"chat-service/internal/http/utils/parsers"
 )
 
 func (h *Handler) CreateChat(w http.ResponseWriter, r *http.Request) {
@@ -17,8 +18,11 @@ func (h *Handler) CreateChat(w http.ResponseWriter, r *http.Request) {
 		helpers.HandleError(w, err)
 		return
 	}
-	if req.Title == "" {
-		helpers.HandleError(w, consts.InvalidChatTitle)
+
+	err := req.Validate()
+	if err != nil {
+		helpers.HandleError(w, err)
+		slog.Error(err.Error())
 		return
 	}
 
@@ -36,9 +40,9 @@ func (h *Handler) CreateChat(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetChatByID(w http.ResponseWriter, r *http.Request) {
-	id := helpers.ParseParamID(w, r, "id")
+	id := parsers.ParseParamID(w, r, "id")
 
-	limit := helpers.QueryLimit(w, r)
+	limit := parsers.QueryLimit(w, r)
 	if limit == -1 {
 		return
 	}
@@ -57,7 +61,7 @@ func (h *Handler) GetChatByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) DeleteChatByID(w http.ResponseWriter, r *http.Request) {
-	id := helpers.ParseParamID(w, r, "id")
+	id := parsers.ParseParamID(w, r, "id")
 
 	ctx, cancel := context.WithTimeout(r.Context(), 500*time.Second)
 	defer cancel()

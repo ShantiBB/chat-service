@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	validation "github.com/go-ozzo/ozzo-validation"
+
 	"chat-service/internal/utils/consts"
 )
 
@@ -12,34 +14,60 @@ type apiError struct {
 	Error string `json:"error"`
 }
 
-func sendError(w http.ResponseWriter, code int, msg string) {
+//easyjson:json
+type validateErrorResponse struct {
+	Error  string            `json:"error"`
+	Fields map[string]string `json:"fields"`
+}
+
+func SendError(w http.ResponseWriter, code int, msg string) {
 	SendJSON(w, code, apiError{Error: msg})
+}
+
+func sendValidationError(w http.ResponseWriter, err error) {
+	var validationErrs validation.Errors
+	errors.As(err, &validationErrs)
+
+	fieldErrors := make(map[string]string)
+	for field, fieldErr := range validationErrs {
+		fieldErrors[field] = fieldErr.Error()
+	}
+
+	response := validateErrorResponse{
+		Error:  "validation failed",
+		Fields: fieldErrors,
+	}
+
+	SendJSON(w, http.StatusBadRequest, response)
 }
 
 func HandleError(w http.ResponseWriter, err error) {
 	switch {
 	case errors.Is(err, consts.InvalidChatID):
-		sendError(w, http.StatusBadRequest, consts.MsgInvalidChatID)
+		SendError(w, http.StatusBadRequest, consts.MsgInvalidChatID)
 
 	case errors.Is(err, consts.InvalidChatTitle):
-		sendError(w, http.StatusBadRequest, consts.MsgInvalidChatTitle)
+		SendError(w, http.StatusBadRequest, consts.MsgInvalidChatTitle)
 
 	case errors.Is(err, consts.InvalidMessagesLimit):
-		sendError(w, http.StatusBadRequest, consts.MsgInvalidMessagesLimit)
+		SendError(w, http.StatusBadRequest, consts.MsgInvalidMessagesLimit)
 
 	case errors.Is(err, consts.InvalidChatText):
-		sendError(w, http.StatusBadRequest, consts.MsgInvalidChatText)
+		SendError(w, http.StatusBadRequest, consts.MsgInvalidChatText)
 
 	case errors.Is(err, consts.ChatNotFound):
-		sendError(w, http.StatusNotFound, consts.MsgChatNotFound)
+		SendError(w, http.StatusNotFound, consts.MsgChatNotFound)
 
 	case errors.Is(err, consts.JsonEmptyBody):
-		sendError(w, http.StatusBadRequest, consts.MsgJsonEmptyBody)
+		SendError(w, http.StatusBadRequest, consts.MsgJsonEmptyBody)
 
 	case errors.Is(err, consts.JsonInvalid):
-		sendError(w, http.StatusBadRequest, consts.MsgJsonInvalid)
+		SendError(w, http.StatusBadRequest, consts.MsgJsonInvalid)
+
+	case errors.As(err, &validation.Errors{}):
+		sendValidationError(w, err)
 
 	default:
-		sendError(w, http.StatusInternalServerError, consts.MsgInternal)
+		SendError(w, http.StatusInternalServerError, consts.MsgInternal)
 	}
 }

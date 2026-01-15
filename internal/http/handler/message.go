@@ -7,11 +7,12 @@ import (
 	"chat-service/internal/http/dto/request"
 	"chat-service/internal/http/utils/helpers"
 	"chat-service/internal/http/utils/mappers"
+	"chat-service/internal/http/utils/parsers"
 	"chat-service/internal/utils/consts"
 )
 
 func (h *Handler) CreateMessage(w http.ResponseWriter, r *http.Request) {
-	chatID := helpers.ParseParamID(w, r, "chatID")
+	chatID := parsers.ParseParamID(w, r, "chatID")
 	req := request.CreateMessage{}
 	if err := helpers.DecodeJSON(r, &req); err != nil {
 		helpers.HandleError(w, err)
