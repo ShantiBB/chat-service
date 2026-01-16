@@ -17,113 +17,7 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjsonE34310f8DecodeChatServiceInternalHttpUtilsHelpers(in *jlexer.Lexer, out *validateErrorResponse) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		switch key {
-		case "error":
-			if in.IsNull() {
-				in.Skip()
-			} else {
-				out.Error = string(in.String())
-			}
-		case "fields":
-			if in.IsNull() {
-				in.Skip()
-			} else {
-				in.Delim('{')
-				out.Fields = make(map[string]string)
-				for !in.IsDelim('}') {
-					key := string(in.String())
-					in.WantColon()
-					var v1 string
-					if in.IsNull() {
-						in.Skip()
-					} else {
-						v1 = string(in.String())
-					}
-					(out.Fields)[key] = v1
-					in.WantComma()
-				}
-				in.Delim('}')
-			}
-		default:
-			in.SkipRecursive()
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonE34310f8EncodeChatServiceInternalHttpUtilsHelpers(out *jwriter.Writer, in validateErrorResponse) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	{
-		const prefix string = ",\"error\":"
-		out.RawString(prefix[1:])
-		out.String(string(in.Error))
-	}
-	{
-		const prefix string = ",\"fields\":"
-		out.RawString(prefix)
-		if in.Fields == nil && (out.Flags&jwriter.NilMapAsEmpty) == 0 {
-			out.RawString(`null`)
-		} else {
-			out.RawByte('{')
-			v2First := true
-			for v2Name, v2Value := range in.Fields {
-				if v2First {
-					v2First = false
-				} else {
-					out.RawByte(',')
-				}
-				out.String(string(v2Name))
-				out.RawByte(':')
-				out.String(string(v2Value))
-			}
-			out.RawByte('}')
-		}
-	}
-	out.RawByte('}')
-}
-
-// MarshalJSON supports json.Marshaler interface
-func (v validateErrorResponse) MarshalJSON() ([]byte, error) {
-	w := jwriter.Writer{}
-	easyjsonE34310f8EncodeChatServiceInternalHttpUtilsHelpers(&w, v)
-	return w.Buffer.BuildBytes(), w.Error
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v validateErrorResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonE34310f8EncodeChatServiceInternalHttpUtilsHelpers(w, v)
-}
-
-// UnmarshalJSON supports json.Unmarshaler interface
-func (v *validateErrorResponse) UnmarshalJSON(data []byte) error {
-	r := jlexer.Lexer{Data: data}
-	easyjsonE34310f8DecodeChatServiceInternalHttpUtilsHelpers(&r, v)
-	return r.Error()
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *validateErrorResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonE34310f8DecodeChatServiceInternalHttpUtilsHelpers(l, v)
-}
-func easyjsonE34310f8DecodeChatServiceInternalHttpUtilsHelpers1(in *jlexer.Lexer, out *apiError) {
+func easyjsonE34310f8DecodeChatServiceInternalHttpUtilsHelpers(in *jlexer.Lexer, out *apiError) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -153,7 +47,7 @@ func easyjsonE34310f8DecodeChatServiceInternalHttpUtilsHelpers1(in *jlexer.Lexer
 		in.Consumed()
 	}
 }
-func easyjsonE34310f8EncodeChatServiceInternalHttpUtilsHelpers1(out *jwriter.Writer, in apiError) {
+func easyjsonE34310f8EncodeChatServiceInternalHttpUtilsHelpers(out *jwriter.Writer, in apiError) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -168,23 +62,23 @@ func easyjsonE34310f8EncodeChatServiceInternalHttpUtilsHelpers1(out *jwriter.Wri
 // MarshalJSON supports json.Marshaler interface
 func (v apiError) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonE34310f8EncodeChatServiceInternalHttpUtilsHelpers1(&w, v)
+	easyjsonE34310f8EncodeChatServiceInternalHttpUtilsHelpers(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v apiError) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonE34310f8EncodeChatServiceInternalHttpUtilsHelpers1(w, v)
+	easyjsonE34310f8EncodeChatServiceInternalHttpUtilsHelpers(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *apiError) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonE34310f8DecodeChatServiceInternalHttpUtilsHelpers1(&r, v)
+	easyjsonE34310f8DecodeChatServiceInternalHttpUtilsHelpers(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *apiError) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonE34310f8DecodeChatServiceInternalHttpUtilsHelpers1(l, v)
+	easyjsonE34310f8DecodeChatServiceInternalHttpUtilsHelpers(l, v)
 }

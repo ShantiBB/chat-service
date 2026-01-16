@@ -31,18 +31,6 @@ func easyjson9b8f5552DecodeChatServiceInternalHttpDtoResponse(in *jlexer.Lexer, 
 		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		switch key {
-		case "id":
-			if in.IsNull() {
-				in.Skip()
-			} else {
-				out.ID = uint(in.Uint())
-			}
-		case "title":
-			if in.IsNull() {
-				in.Skip()
-			} else {
-				out.Title = string(in.String())
-			}
 		case "created_at":
 			if in.IsNull() {
 				in.Skip()
@@ -50,6 +38,18 @@ func easyjson9b8f5552DecodeChatServiceInternalHttpDtoResponse(in *jlexer.Lexer, 
 				if data := in.Raw(); in.Ok() {
 					in.AddError((out.CreatedAt).UnmarshalJSON(data))
 				}
+			}
+		case "title":
+			if in.IsNull() {
+				in.Skip()
+			} else {
+				out.Title = string(in.String())
+			}
+		case "id":
+			if in.IsNull() {
+				in.Skip()
+			} else {
+				out.ID = uint(in.Uint())
 			}
 		default:
 			in.SkipRecursive()
@@ -66,9 +66,9 @@ func easyjson9b8f5552EncodeChatServiceInternalHttpDtoResponse(out *jwriter.Write
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"id\":"
+		const prefix string = ",\"created_at\":"
 		out.RawString(prefix[1:])
-		out.Uint(uint(in.ID))
+		out.Raw((in.CreatedAt).MarshalJSON())
 	}
 	{
 		const prefix string = ",\"title\":"
@@ -76,9 +76,9 @@ func easyjson9b8f5552EncodeChatServiceInternalHttpDtoResponse(out *jwriter.Write
 		out.String(string(in.Title))
 	}
 	{
-		const prefix string = ",\"created_at\":"
+		const prefix string = ",\"id\":"
 		out.RawString(prefix)
-		out.Raw((in.CreatedAt).MarshalJSON())
+		out.Uint(uint(in.ID))
 	}
 	out.RawByte('}')
 }
@@ -120,11 +120,13 @@ func easyjson9b8f5552DecodeChatServiceInternalHttpDtoResponse1(in *jlexer.Lexer,
 		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		switch key {
-		case "id":
+		case "created_at":
 			if in.IsNull() {
 				in.Skip()
 			} else {
-				out.ID = uint(in.Uint())
+				if data := in.Raw(); in.Ok() {
+					in.AddError((out.CreatedAt).UnmarshalJSON(data))
+				}
 			}
 		case "title":
 			if in.IsNull() {
@@ -140,32 +142,38 @@ func easyjson9b8f5552DecodeChatServiceInternalHttpDtoResponse1(in *jlexer.Lexer,
 				in.Delim('[')
 				if out.Messages == nil {
 					if !in.IsDelim(']') {
-						out.Messages = make([]Message, 0, 1)
+						out.Messages = make([]*Message, 0, 8)
 					} else {
-						out.Messages = []Message{}
+						out.Messages = []*Message{}
 					}
 				} else {
 					out.Messages = (out.Messages)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v1 Message
+					var v1 *Message
 					if in.IsNull() {
 						in.Skip()
+						v1 = nil
 					} else {
-						(v1).UnmarshalEasyJSON(in)
+						if v1 == nil {
+							v1 = new(Message)
+						}
+						if in.IsNull() {
+							in.Skip()
+						} else {
+							(*v1).UnmarshalEasyJSON(in)
+						}
 					}
 					out.Messages = append(out.Messages, v1)
 					in.WantComma()
 				}
 				in.Delim(']')
 			}
-		case "created_at":
+		case "id":
 			if in.IsNull() {
 				in.Skip()
 			} else {
-				if data := in.Raw(); in.Ok() {
-					in.AddError((out.CreatedAt).UnmarshalJSON(data))
-				}
+				out.ID = uint(in.Uint())
 			}
 		default:
 			in.SkipRecursive()
@@ -182,9 +190,9 @@ func easyjson9b8f5552EncodeChatServiceInternalHttpDtoResponse1(out *jwriter.Writ
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"id\":"
+		const prefix string = ",\"created_at\":"
 		out.RawString(prefix[1:])
-		out.Uint(uint(in.ID))
+		out.Raw((in.CreatedAt).MarshalJSON())
 	}
 	{
 		const prefix string = ",\"title\":"
@@ -202,15 +210,19 @@ func easyjson9b8f5552EncodeChatServiceInternalHttpDtoResponse1(out *jwriter.Writ
 				if v2 > 0 {
 					out.RawByte(',')
 				}
-				(v3).MarshalEasyJSON(out)
+				if v3 == nil {
+					out.RawString("null")
+				} else {
+					(*v3).MarshalEasyJSON(out)
+				}
 			}
 			out.RawByte(']')
 		}
 	}
 	{
-		const prefix string = ",\"created_at\":"
+		const prefix string = ",\"id\":"
 		out.RawString(prefix)
-		out.Raw((in.CreatedAt).MarshalJSON())
+		out.Uint(uint(in.ID))
 	}
 	out.RawByte('}')
 }

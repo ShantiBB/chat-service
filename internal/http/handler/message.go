@@ -1,14 +1,13 @@
 package handler
 
 import (
+	"context"
 	"net/http"
-	"time"
 
 	"chat-service/internal/http/dto/request"
 	"chat-service/internal/http/utils/helpers"
 	"chat-service/internal/http/utils/mappers"
 	"chat-service/internal/http/utils/parsers"
-	"chat-service/internal/utils/consts"
 )
 
 func (h *Handler) CreateMessage(w http.ResponseWriter, r *http.Request) {
@@ -18,16 +17,18 @@ func (h *Handler) CreateMessage(w http.ResponseWriter, r *http.Request) {
 		helpers.HandleError(w, err)
 		return
 	}
-	if req.Text == "" {
-		helpers.HandleError(w, consts.InvalidChatText)
+
+	err := req.Validate()
+	if err != nil {
+		helpers.HandleError(w, err)
 		return
 	}
 
-	ctx := helpers.WithTimeout(r.Context(), 500*time.Second)
-	defer helpers.Cancel()
+	ctx, cancel := context.WithTimeout(r.Context(), h.cfg.Server.Context.TimeOut)
+	defer cancel()
 
-	msg := mappers.CreateMessageToModel(req, chatID)
-	if err := h.svc.CreateMessage(ctx, &msg); err != nil {
+	msg := mappers.CreateMessageToModel(&req, chatID)
+	if err = h.svc.CreateMessage(ctx, msg); err != nil {
 		helpers.HandleError(w, err)
 		return
 	}

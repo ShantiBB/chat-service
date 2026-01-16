@@ -4,12 +4,13 @@ import (
 	"context"
 	"net/http"
 
+	"chat-service/internal/config"
 	"chat-service/internal/repository/models"
 )
 
 type ChatService interface {
 	CreateChat(ctx context.Context, chat *models.Chat) error
-	GetChatByID(ctx context.Context, id uint, limit int) (models.Chat, error)
+	GetChatByID(ctx context.Context, id uint, limit int) (*models.Chat, error)
 	DeleteChatByID(ctx context.Context, id uint) error
 }
 
@@ -23,10 +24,14 @@ type Service interface {
 }
 type Handler struct {
 	svc Service
+	cfg *config.Config
 }
 
-func New(svc Service) *Handler {
-	return &Handler{svc: svc}
+func New(svc Service, cfg *config.Config) *Handler {
+	return &Handler{
+		svc: svc,
+		cfg: cfg,
+	}
 }
 
 func (h *Handler) Router(mux *http.ServeMux) {

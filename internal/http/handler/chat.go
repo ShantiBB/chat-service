@@ -2,9 +2,7 @@ package handler
 
 import (
 	"context"
-	"log/slog"
 	"net/http"
-	"time"
 
 	"chat-service/internal/http/dto/request"
 	"chat-service/internal/http/utils/helpers"
@@ -22,15 +20,14 @@ func (h *Handler) CreateChat(w http.ResponseWriter, r *http.Request) {
 	err := req.Validate()
 	if err != nil {
 		helpers.HandleError(w, err)
-		slog.Error(err.Error())
 		return
 	}
 
-	ctx := helpers.WithTimeout(r.Context(), 500*time.Second)
-	defer helpers.Cancel()
+	ctx, cancel := context.WithTimeout(r.Context(), h.cfg.Server.Context.TimeOut)
+	defer cancel()
 
-	chat := mappers.CreateChatToModel(req)
-	if err := h.svc.CreateChat(ctx, &chat); err != nil {
+	chat := mappers.CreateChatToModel(&req)
+	if err = h.svc.CreateChat(ctx, chat); err != nil {
 		helpers.HandleError(w, err)
 		return
 	}
@@ -42,12 +39,12 @@ func (h *Handler) CreateChat(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetChatByID(w http.ResponseWriter, r *http.Request) {
 	id := parsers.ParseParamID(w, r, "id")
 
-	limit := parsers.QueryLimit(w, r)
-	if limit == -1 {
+	limit, ok := parsers.QueryLimit(w, r)
+	if !ok {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(r.Context(), 500*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), h.cfg.Server.Context.TimeOut)
 	defer cancel()
 
 	chat, err := h.svc.GetChatByID(ctx, id, limit)
@@ -63,7 +60,7 @@ func (h *Handler) GetChatByID(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) DeleteChatByID(w http.ResponseWriter, r *http.Request) {
 	id := parsers.ParseParamID(w, r, "id")
 
-	ctx, cancel := context.WithTimeout(r.Context(), 500*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), h.cfg.Server.Context.TimeOut)
 	defer cancel()
 
 	if err := h.svc.DeleteChatByID(ctx, id); err != nil {

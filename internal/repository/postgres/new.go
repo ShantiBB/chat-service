@@ -2,10 +2,11 @@ package postgres
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	gormlogger "gorm.io/gorm/logger"
 
 	"chat-service/internal/config"
 	"chat-service/internal/repository/models"
@@ -27,14 +28,18 @@ func New(cfg *config.Config) *Repository {
 		cfg.Postgres.TimeZone,
 	)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(
+		postgres.Open(dsn), &gorm.Config{
+			Logger: gormlogger.Default.LogMode(gormlogger.Silent),
+		},
+	)
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("failed to connect to database", "error", err)
 	}
 
 	sqlDB, err := db.DB()
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("failed to get database instance", "error", err)
 	}
 
 	sqlDB.SetMaxOpenConns(cfg.Postgres.Pool.MaxOpenConns)

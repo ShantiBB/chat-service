@@ -5,9 +5,9 @@ import (
 )
 
 type Message struct {
-	ID        uint   `gorm:"primaryKey"`
-	ChatID    uint   `gorm:"not null;index"`
-	Chat      Chat   `gorm:"foreignKey:ChatID;constraint:OnDelete:CASCADE;"`
-	Text      string `gorm:"size:5000;not null"`
 	CreatedAt time.Time
+	Text      string `gorm:"size:5000;not null"`
+	Chat      Chat   `gorm:"foreignKey:ChatID;constraint:OnDelete:CASCADE;"`
+	ChatID    uint   `gorm:"not null;index"`
+	ID        uint   `gorm:"primaryKey"`
 }

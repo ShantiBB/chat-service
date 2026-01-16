@@ -6,7 +6,7 @@ import (
 
 	"github.com/mailru/easyjson"
 
-	"chat-service/internal/utils/consts"
+	"chat-service/internal/lib/utils/consts"
 )
 
 func SendJSON(w http.ResponseWriter, code int, v easyjson.Marshaler) {
@@ -22,13 +22,13 @@ func SendJSON(w http.ResponseWriter, code int, v easyjson.Marshaler) {
 
 func DecodeJSON(r *http.Request, v easyjson.Unmarshaler) error {
 	if r.Body == nil {
-		return consts.JsonEmptyBody
+		return consts.ErrJsonEmptyBody
 	}
 	defer r.Body.Close()
 
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		return consts.JsonInvalid
+		return consts.ErrJsonInvalid
 	}
 
 	return easyjson.Unmarshal(b, v)

@@ -5,8 +5,8 @@ import (
 	"chat-service/internal/repository/models"
 )
 
-func CreateChatToModel(req request.CreateChat) models.Chat {
-	return models.Chat{
+func CreateChatToModel(req *request.CreateChat) *models.Chat {
+	return &models.Chat{
 		Title: req.Title,
 	}
 }

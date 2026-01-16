@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"chat-service/internal/http/utils/helpers"
-	"chat-service/internal/utils/consts"
+	"chat-service/internal/lib/utils/consts"
 )
 
 const (
@@ -13,17 +13,17 @@ const (
 	MaxLimit     = 100
 )
 
-func QueryLimit(w http.ResponseWriter, r *http.Request) int {
+func QueryLimit(w http.ResponseWriter, r *http.Request) (int, bool) {
 	limitStr := r.URL.Query().Get("limit")
 	if limitStr == "" {
-		return DefaultLimit
+		return DefaultLimit, true
 	}
 
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil || limit < 0 || limit > MaxLimit {
-		helpers.HandleError(w, consts.InvalidMessagesLimit)
-		return -1
+		helpers.HandleError(w, consts.ErrInvalidMessagesLimit)
+		return 0, false
 	}
 
-	return limit
+	return limit, true
 }

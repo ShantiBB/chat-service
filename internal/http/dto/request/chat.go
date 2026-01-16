@@ -2,6 +2,8 @@ package request
 
 import (
 	validation "github.com/go-ozzo/ozzo-validation"
+
+	"chat-service/internal/lib/utils/consts"
 )
 
 //easyjson:json
@@ -14,8 +16,8 @@ func (c *CreateChat) Validate() error {
 		c,
 		validation.Field(
 			&c.Title,
-			validation.Required.Error("название чата обязательно"),
-			validation.Length(1, 200).Error("название должно быть от 1 до 200 символов"),
+			validation.Required.Error(consts.MsgRequiredField),
+			validation.Length(1, 5000).Error(consts.MsgTitleLength),
 		),
 	)
 }
