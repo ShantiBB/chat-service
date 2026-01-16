@@ -25,7 +25,6 @@ func (app *App) MustLoad() {
 	slog.SetDefault(app.Logger)
 
 	repo := postgres.New(app.Config)
-	repo.Migrate()
 
 	svc := service.New(repo)
 	h := handler.New(svc, app.Config)
@@ -41,12 +40,14 @@ func (app *App) MustLoad() {
 }
 
 func (app *App) server(mux *http.ServeMux) *http.Server {
+	address := fmt.Sprintf(
+		"%s:%d",
+		app.Config.Server.Host,
+		app.Config.Server.Port,
+	)
+
 	return &http.Server{
-		Addr: fmt.Sprintf(
-			"%s:%d",
-			app.Config.Server.Host,
-			app.Config.Server.Port,
-		),
+		Addr:         address,
 		Handler:      mux,
 		ReadTimeout:  app.Config.Server.ReadTimeout,
 		WriteTimeout: app.Config.Server.WriteTimeout,
