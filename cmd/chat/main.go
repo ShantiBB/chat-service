@@ -1,17 +1,14 @@
 package main
 
 import (
-	"log"
 	"log/slog"
-	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
 
+	"chat-service/internal/app"
 	"chat-service/internal/config"
-	"chat-service/internal/http/handler"
-	"chat-service/internal/repository/postgres"
-	"chat-service/internal/service"
+	"chat-service/internal/lib/logger"
 )
 
 func main() {
@@ -29,15 +26,9 @@ func main() {
 		panic("failed to load config: " + err.Error())
 	}
 
-	repo := postgres.New(cfg)
-	repo.Migrate()
-
-	svc := service.New(repo)
-	h := handler.New(svc)
-
-	mux := http.NewServeMux()
-	h.Router(mux)
-
-	log.Println("listening on :8080")
-	log.Fatal(http.ListenAndServe(":8080", mux))
+	chatApp := app.App{
+		Config: cfg,
+		Logger: logger.New(cfg.Env, cfg.LogLevel),
+	}
+	chatApp.MustLoad()
 }

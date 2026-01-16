@@ -6,9 +6,18 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
+type ContextConfig struct {
+	TimeOut time.Duration `yaml:"timeout"`
+}
+
 type ServerConfig struct {
-	Host string `yaml:"host" env:"HOST" env-required:"true"`
-	Port int    `yaml:"port" env:"PORT" env-required:"true"`
+	Host            string        `yaml:"host"`
+	Port            int           `yaml:"port"`
+	ReadTimeout     time.Duration `yaml:"read_timeout"`
+	WriteTimeout    time.Duration `yaml:"write_timeout"`
+	IdleTimeout     time.Duration `yaml:"idle_timeout"`
+	ShutdownTimeout time.Duration `yaml:"shutdown_timeout"`
+	Context         ContextConfig `yaml:"context"`
 }
 
 type PostgresPoolConfig struct {
@@ -19,18 +28,20 @@ type PostgresPoolConfig struct {
 }
 type PostgresConfig struct {
 	Host     string             `yaml:"host"`
-	Port     int                `yaml:"port" `
 	User     string             `yaml:"user" `
 	Password string             `yaml:"password"`
 	DB       string             `yaml:"db"`
 	SSLMode  string             `yaml:"sslmode"`
 	TimeZone string             `yaml:"time_zone"`
 	Pool     PostgresPoolConfig `yaml:"pool"`
+	Port     int                `yaml:"port" `
 }
 
 type Config struct {
-	Server   ServerConfig   `yaml:"server" env-prefix:"SERVER_"`
-	Postgres PostgresConfig `yaml:"postgres" env-prefix:"POSTGRES_"`
+	Env      string         `yaml:"env"`
+	LogLevel string         `yaml:"log_level"`
+	Postgres PostgresConfig `yaml:"postgres"`
+	Server   ServerConfig   `yaml:"server"`
 }
 
 func New(configPath string) (*Config, error) {
