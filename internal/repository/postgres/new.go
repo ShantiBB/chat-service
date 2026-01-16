@@ -9,7 +9,6 @@ import (
 	gormlogger "gorm.io/gorm/logger"
 
 	"chat-service/internal/config"
-	"chat-service/internal/repository/models"
 )
 
 type Repository struct {
@@ -49,15 +48,5 @@ func New(cfg *config.Config) *Repository {
 
 	return &Repository{
 		db: db,
-	}
-}
-
-func (r *Repository) Migrate() {
-	var err error
-	if err = r.db.AutoMigrate(&models.Chat{}); err != nil {
-		return
-	}
-	if err = r.db.AutoMigrate(&models.Message{}); err != nil {
-		return
 	}
 }
