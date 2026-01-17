@@ -21,6 +21,8 @@ func (r *Repository) InsertMessage(ctx context.Context, message *models.Message)
 				return consts2.ErrChatNotFound
 			}
 		}
+
+		return err
 	}
 
 	return nil
