@@ -23,14 +23,14 @@ type Service interface {
 	MessageService
 }
 type Handler struct {
-	svc Service
-	cfg *config.Config
+	Svc Service
+	Cfg *config.Config
 }
 
 func New(svc Service, cfg *config.Config) *Handler {
 	return &Handler{
-		svc: svc,
-		cfg: cfg,
+		Svc: svc,
+		Cfg: cfg,
 	}
 }
 

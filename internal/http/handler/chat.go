@@ -23,11 +23,11 @@ func (h *Handler) CreateChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(r.Context(), h.cfg.Server.Context.TimeOut)
+	ctx, cancel := context.WithTimeout(r.Context(), h.Cfg.Server.Context.TimeOut)
 	defer cancel()
 
 	chat := mappers.CreateChatToModel(&req)
-	if err = h.svc.CreateChat(ctx, chat); err != nil {
+	if err = h.Svc.CreateChat(ctx, chat); err != nil {
 		helpers.HandleError(w, err)
 		return
 	}
@@ -37,17 +37,20 @@ func (h *Handler) CreateChat(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetChatByID(w http.ResponseWriter, r *http.Request) {
-	id := parsers.ParseParamID(w, r, "id")
+	id, ok := parsers.ParamID(w, r, "id")
+	if !ok {
+		return
+	}
 
 	limit, ok := parsers.QueryLimit(w, r)
 	if !ok {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(r.Context(), h.cfg.Server.Context.TimeOut)
+	ctx, cancel := context.WithTimeout(r.Context(), h.Cfg.Server.Context.TimeOut)
 	defer cancel()
 
-	chat, err := h.svc.GetChatByID(ctx, id, limit)
+	chat, err := h.Svc.GetChatByID(ctx, id, limit)
 	if err != nil {
 		helpers.HandleError(w, err)
 		return
@@ -58,12 +61,15 @@ func (h *Handler) GetChatByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) DeleteChatByID(w http.ResponseWriter, r *http.Request) {
-	id := parsers.ParseParamID(w, r, "id")
+	id, ok := parsers.ParamID(w, r, "id")
+	if !ok {
+		return
+	}
 
-	ctx, cancel := context.WithTimeout(r.Context(), h.cfg.Server.Context.TimeOut)
+	ctx, cancel := context.WithTimeout(r.Context(), h.Cfg.Server.Context.TimeOut)
 	defer cancel()
 
-	if err := h.svc.DeleteChatByID(ctx, id); err != nil {
+	if err := h.Svc.DeleteChatByID(ctx, id); err != nil {
 		helpers.HandleError(w, err)
 		return
 	}

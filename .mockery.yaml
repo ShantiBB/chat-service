@@ -1,0 +1,20 @@
+with-expecter: true
+resolve-type-alias: false
+disable-version-string: true
+issue-845-fix: true
+
+packages:
+  chat-service/internal/http/handler:
+    config:
+      dir: "test/unit/mocks"
+      filename: "service.go"
+      outpkg: "mocks"
+    interfaces:
+      Service:
+  chat-service/internal/service:
+    config:
+      dir: "test/unit/mocks"
+      filename: "repository.go"
+      outpkg: "mocks"
+    interfaces:
+      Repository:

@@ -31,5 +31,9 @@ func DecodeJSON(r *http.Request, v easyjson.Unmarshaler) error {
 		return consts.ErrJsonInvalid
 	}
 
-	return easyjson.Unmarshal(b, v)
+	if err = easyjson.Unmarshal(b, v); err != nil {
+		return consts.ErrJsonInvalid
+	}
+
+	return nil
 }

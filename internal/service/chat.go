@@ -8,11 +8,12 @@ import (
 )
 
 func (s *Service) CreateChat(ctx context.Context, chat *models.Chat) error {
+	chat.Title = strings.TrimSpace(chat.Title)
+
 	if err := s.repo.InsertChat(ctx, chat); err != nil {
 		return err
 	}
 
-	chat.Title = strings.TrimSpace(chat.Title)
 	return nil
 }
 

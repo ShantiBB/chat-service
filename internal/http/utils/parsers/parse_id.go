@@ -8,13 +8,13 @@ import (
 	"chat-service/internal/lib/utils/consts"
 )
 
-func ParseParamID(w http.ResponseWriter, r *http.Request, param string) uint {
+func ParamID(w http.ResponseWriter, r *http.Request, param string) (uint, bool) {
 	idParam := r.PathValue(param)
 	id, err := strconv.ParseUint(idParam, 10, 64)
 	if err != nil || id == 0 {
 		helpers.HandleError(w, consts.ErrInvalidChatID)
-		return 0
+		return 0, false
 	}
 
-	return uint(id)
+	return uint(id), true
 }

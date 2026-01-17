@@ -11,7 +11,11 @@ import (
 )
 
 func (h *Handler) CreateMessage(w http.ResponseWriter, r *http.Request) {
-	chatID := parsers.ParseParamID(w, r, "chatID")
+	chatID, ok := parsers.ParamID(w, r, "chatID")
+	if !ok {
+		return
+	}
+
 	req := request.CreateMessage{}
 	if err := helpers.DecodeJSON(r, &req); err != nil {
 		helpers.HandleError(w, err)
@@ -24,11 +28,11 @@ func (h *Handler) CreateMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(r.Context(), h.cfg.Server.Context.TimeOut)
+	ctx, cancel := context.WithTimeout(r.Context(), h.Cfg.Server.Context.TimeOut)
 	defer cancel()
 
 	msg := mappers.CreateMessageToModel(&req, chatID)
-	if err = h.svc.CreateMessage(ctx, msg); err != nil {
+	if err = h.Svc.CreateMessage(ctx, msg); err != nil {
 		helpers.HandleError(w, err)
 		return
 	}
