@@ -1,7 +1,7 @@
 services:
   postgres:
     image: "postgres:18.1"
-    container_name: "postgres"
+    container_name: postgres
     volumes:
       - pg_data:/data/18
     environment:
@@ -13,6 +13,18 @@ services:
       - "5432:5432"
     restart: unless-stopped
 
+  chat-service:
+    build:
+      context: .
+    image: chat-service:latest
+    container_name: chat-service
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      CONFIG_PATH: config/docker.yaml
+    depends_on:
+      - postgres
 volumes:
   pg_data:
     driver: local

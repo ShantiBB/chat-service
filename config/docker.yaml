@@ -1,0 +1,25 @@
+env: "local" # local, dev, prod
+log_level: "DEBUG" # DEBUG, INFO, WARN, ERROR
+
+server:
+  host: "0.0.0.0"
+  port: 8080
+  read_timeout: 10s
+  write_timeout: 10s
+  idle_timeout: 120s
+  shutdown_timeout: 30s
+  context:
+    timeout: 15s
+postgres:
+  host: "postgres"
+  port: 5432
+  user: "postgres"
+  password: "1221"
+  db: "chat"
+  sslmode: "disable"
+  time_zone: "Europe/Moscow"
+  pool:
+    max_open_conns: 25
+    max_idle_conns: 10
+    conn_max_lifetime: 1h
+    conn_max_idle_time: 15m
