@@ -1,0 +1,39 @@
+version: '3'
+
+tasks:
+  run:
+    desc: "Run service"
+    cmds:
+      - "go run cmd/chat/main.go"
+    env:
+      CONFIG_PATH: "config/local.yaml"
+
+  build:
+    desc: "Build service"
+    cmds:
+      - go build -o build/chat cmd/chat/main.go
+
+  swag-gen:
+    desc: "Generate Swagger docs"
+    cmds:
+      - swag init -g cmd/chat/main.go --output docs
+
+  test-unit-handler:
+    desc: "Run unit handler tests"
+    cmds:
+      - go test -v ./internal/http/handler/...
+
+  test-unit-service:
+    desc: "Run unit handler tests"
+    cmds:
+      - go test -v ./internal/http/handler/...
+
+  postgres-up:
+    desc: "Start PostgreSQL container"
+    cmds:
+      - docker compose up postgres -d
+
+  postgres-stop:
+    desc: "Stop PostgreSQL container"
+    cmds:
+      - docker compose postgres down
