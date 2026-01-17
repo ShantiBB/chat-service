@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"fmt"
-	"log/slog"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -33,12 +32,12 @@ func New(cfg *config.Config) *Repository {
 		},
 	)
 	if err != nil {
-		slog.Error("failed to connect to database", "error", err)
+		panic(fmt.Sprintf("failed to connect to database: %v", err))
 	}
 
 	sqlDB, err := db.DB()
 	if err != nil {
-		slog.Error("failed to get database instance", "error", err)
+		panic(fmt.Sprintf("failed to get database instance: %v", err))
 	}
 
 	sqlDB.SetMaxOpenConns(cfg.Postgres.Pool.MaxOpenConns)
