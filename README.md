@@ -156,7 +156,7 @@ docker-compose down
 docker-compose down -v
 ```
 
-## ⚙️ Конфигурация
+## Конфигурация
 
 ### Переменные окружения
 
