@@ -27,6 +27,14 @@ tasks:
     desc: "Run unit service tests"
     cmd: go test -v ./internal/service/...
 
+  docker-up:
+    desc: "Start docker compose"
+    cmd: docker compose up -d --build
+
+  docker-down:
+    desc: "Stop docker compose"
+    cmd: docker compose down
+
   postgres-up:
     desc: "Start PostgreSQL container"
     cmd: docker compose up postgres -d
