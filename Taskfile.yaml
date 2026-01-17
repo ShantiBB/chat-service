@@ -3,37 +3,58 @@ version: '3'
 tasks:
   run:
     desc: "Run service"
-    cmds:
-      - "go run cmd/chat/main.go"
+    cmd: go run cmd/chat/main.go
     env:
       CONFIG_PATH: "config/local.yaml"
 
   build:
     desc: "Build service"
-    cmds:
-      - go build -o build/chat cmd/chat/main.go
+    cmd: go build -o build/chat cmd/chat/main.go
 
   swag-gen:
     desc: "Generate Swagger docs"
-    cmds:
-      - swag init -g cmd/chat/main.go --output docs
+    cmd: swag init -g cmd/chat/main.go --output docs
 
   test-unit-handler:
     desc: "Run unit handler tests"
-    cmds:
-      - go test -v ./internal/http/handler/...
+    cmd: go test -v ./internal/http/handler/...
 
   test-unit-service:
-    desc: "Run unit handler tests"
-    cmds:
-      - go test -v ./internal/http/handler/...
+    desc: "Run unit service tests"
+    cmd: go test -v ./internal/service/...
 
   postgres-up:
     desc: "Start PostgreSQL container"
-    cmds:
-      - docker compose up postgres -d
+    cmd: docker compose up postgres -d
 
-  postgres-stop:
+  postgres-down:
     desc: "Stop PostgreSQL container"
+    cmd: docker compose down postgres
+
+  golangci-lint:
+    desc: "Lint repository code"
     cmds:
-      - docker compose postgres down
+      - task: golangci-lint-{{.mode}}
+    requires:
+      vars: [mode]
+
+  golangci-lint-dry:
+    internal: true
+    cmd: golangci-lint run
+
+  golangci-lint-fix:
+    internal: true
+    cmd: golangci-lint run --fix
+
+  goose:
+    dotenv: [".env"]
+    desc: Run goose migrations
+    cmd: |
+          goose -dir ./migrations postgres \
+            "host=${POSTGRES_HOST} \
+            port=${POSTGRES_PORT} \
+            user=${POSTGRES_USER} \
+            password=${POSTGRES_PASSWORD} \
+            dbname=${POSTGRES_DB} \
+            sslmode=disable" \
+            {{default "status" .mode}}
