@@ -5,11 +5,26 @@ import (
 	"net/http"
 
 	"chat-service/internal/http/dto/request"
+	_ "chat-service/internal/http/dto/response"
 	"chat-service/internal/http/utils/helpers"
 	"chat-service/internal/http/utils/mappers"
 	"chat-service/internal/http/utils/parsers"
 )
 
+// CreateMessage   godoc
+// @Summary      Create  a message
+// @Description  Create a new message in chat
+// @Tags         chats
+// @Accept       json
+// @Produce      json
+// @Param		 chat_id	       path		   uint	                 true  "Chat id"
+// @Param        request           body        request.CreateMessage true  "Message data"
+// @Success      201               {object}    response.Message
+// @Failure      400               {object}    helpers.apiError
+// @Failure      404               {object}    helpers.apiError
+// @Failure      500               {object}    helpers.apiError
+// @Security     Bearer
+// @Router       /chats/{chat_id}/messages            [post]
 func (h *Handler) CreateMessage(w http.ResponseWriter, r *http.Request) {
 	chatID, ok := parsers.ParamID(w, r, "chatID")
 	if !ok {

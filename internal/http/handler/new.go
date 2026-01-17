@@ -4,6 +4,9 @@ import (
 	"context"
 	"net/http"
 
+	httpswagger "github.com/swaggo/http-swagger"
+
+	_ "chat-service/docs"
 	"chat-service/internal/config"
 	"chat-service/internal/repository/models"
 )
@@ -35,9 +38,13 @@ func New(svc Service, cfg *config.Config) *Handler {
 }
 
 func (h *Handler) Router(mux *http.ServeMux) {
-	mux.HandleFunc("POST /chats", h.CreateChat)
-	mux.HandleFunc("GET /chats/{id}", h.GetChatByID)
-	mux.HandleFunc("DELETE /chats/{id}", h.DeleteChatByID)
+	api := http.NewServeMux()
 
-	mux.HandleFunc("POST /chats/{chatID}/messages", h.CreateMessage)
+	api.HandleFunc("POST /chats", h.CreateChat)
+	api.HandleFunc("GET /chats/{id}", h.GetChatByID)
+	api.HandleFunc("DELETE /chats/{id}", h.DeleteChatByID)
+	api.HandleFunc("POST /chats/{chatID}/messages", h.CreateMessage)
+
+	mux.Handle("GET /api/v1/swagger/", httpswagger.WrapHandler)
+	mux.Handle("/api/v1/", http.StripPrefix("/api/v1", api))
 }

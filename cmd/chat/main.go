@@ -11,6 +11,12 @@ import (
 	"chat-service/internal/lib/logger"
 )
 
+// @title		Swagger Chat API
+// @version		1.0
+// @description	Chat service
+
+// @host		localhost:8080
+// @BasePath	/api/v1
 func main() {
 	if err := godotenv.Load(); err != nil {
 		slog.Warn("failed load env", "error", err)

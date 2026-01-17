@@ -1,0 +1,188 @@
+basePath: /api/v1
+definitions:
+  helpers.apiError:
+    properties:
+      error:
+        type: string
+    type: object
+  request.CreateChat:
+    properties:
+      title:
+        type: string
+    type: object
+  request.CreateMessage:
+    properties:
+      text:
+        type: string
+    type: object
+  response.Chat:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      messages:
+        items:
+          $ref: '#/definitions/response.Message'
+        type: array
+      title:
+        type: string
+    type: object
+  response.Message:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      text:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Chat service
+  title: Swagger Chat API
+  version: "1.0"
+paths:
+  /chats:
+    post:
+      consumes:
+      - application/json
+      description: Create a new chat
+      parameters:
+      - description: Chat data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateChat'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Chat'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.apiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.apiError'
+      security:
+      - Bearer: []
+      summary: Create a chat
+      tags:
+      - chats
+  /chats/{chat_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a chat by id
+      parameters:
+      - description: Chat id
+        in: path
+        name: chat_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.apiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.apiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.apiError'
+      summary: Delete a chat
+      tags:
+      - chats
+    get:
+      consumes:
+      - application/json
+      description: Get a chat by id
+      parameters:
+      - description: Chat id
+        in: path
+        name: chat_id
+        required: true
+        type: integer
+      - default: 20
+        description: Limit messages
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Chat'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.apiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.apiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.apiError'
+      summary: Get a chat
+      tags:
+      - chats
+  /chats/{chat_id}/messages:
+    post:
+      consumes:
+      - application/json
+      description: Create a new message in chat
+      parameters:
+      - description: Chat id
+        in: path
+        name: chat_id
+        required: true
+        type: integer
+      - description: Message data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateMessage'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Message'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.apiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.apiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.apiError'
+      security:
+      - Bearer: []
+      summary: Create  a message
+      tags:
+      - chats
+swagger: "2.0"
